@@ -158,9 +158,9 @@ taskflow-app/
 
 ### Phase 3 - En cours & Extensions 🔮
 - [x] Calendrier complet interactif (Grille mensuelle, planification par date)
-- [ ] Notifications push
+- [x] Notifications push (Web Notifications API & rappels d'échéances)
+- [x] API REST (Endpoints Next.js 15 complets GET/POST/PUT/DELETE /api/tasks)
 - [ ] Collaboration en temps réel
-- [ ] API REST
 - [ ] Authentification
 - [ ] Synchronisation cloud
 

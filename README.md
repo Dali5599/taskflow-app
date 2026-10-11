@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/banner.svg" alt="Project Banner" width="100%">
+</p>
+
 # 🦞 TaskFlow - Task Management Pro
 
 Application moderne de gestion de tâches construite avec **Next.js 15**, **React 18**, **TypeScript** et **Tailwind CSS**.

@@ -1,29 +1,558 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark scroll-smooth">
+<html lang="fr" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskFlow Pro - Task Management Futuristic Platform</title>
+  <title>TaskFlow Pro 🦞 — Interactive Kanban & Task HUD</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
           colors: {
             brand: {
-              50: '#f0f3ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              cyan: '#06b6d4',
-              pink: '#ec4899',
-            },
-            dark: {
-              bg: '#0a0b10',
-              card: '#121520',
-              border: '#1e2436',
-              hover: '#1a1f30
+              dark: '#07080d',
+              card: '#0e111a',
+              cardHover: '#131724',
+              border: '#1b2030',
+              cyan: '#00f2fe',
+              blue: '#4facfe',
+              indigo: '#6366f1',
+              violet: '#8b5cf6',
+              rose: '#f43f5e',
+              success: '#10b981',
+              amber: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #07080d;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.08) 0%, transparent 40%);
+      color: #e2e8f0;
+    }
+    .glass {
+      background: rgba(14, 17, 26, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(19, 23, 36, 0.65);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease-in-out;
+    }
+    .glass-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px 0 rgba(99, 102, 241, 0.15);
+    }
+    .dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+    }
+    .drop-zone-active {
+      border-color: #00f2fe !important;
+      background: rgba(0, 242, 254, 0.05) !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans flex flex-col justify-between selection:bg-brand-indigo selection:text-white">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 glass border-b border-brand-border/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-indigo to-brand-cyan flex items-center justify-center shadow-lg shadow-brand-indigo/20">
+          <span class="text-xl">🦞</span>
+        </div>
+        <div>
+          <span class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-brand-cyan bg-clip-text text-transparent">TaskFlow Pro</span>
+          <span class="text-xs text-brand-cyan ml-2 px-2 py-0.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/20">v1.0 Live</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <a href="https://github.com/Dali5599/taskflow-app" target="_blank" rel="noopener" class="px-4 py-2 text-sm font-medium rounded-lg glass-card text-white hover:text-brand-cyan transition flex items-center space-x-2">
+          <i class="fa-brands fa-github text-base"></i>
+          <span>GitHub</span>
+          <span class="bg-brand-border px-1.5 py-0.5 rounded text-xs text-slate-300">⭐ Star</span>
+        </a>
+        <button onclick="scrollToDemo()" class="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-brand-indigo to-brand-cyan text-white font-semibold hover:shadow-lg hover:shadow-brand-indigo/30 transition transform hover:-translate-y-0.5">
+          Tester le Kanban 🚀
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 text-center">
+    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-indigo/10 border border-brand-indigo/20 text-brand-cyan text-xs font-mono mb-6">
+      <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+      <span>Autonomous Task Architecture • Built by Requin & Dali</span>
+    </div>
+    
+    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
+      Gestionnaire de Tâches <br>
+      <span class="bg-gradient-to-r from-brand-cyan via-brand-indigo to-brand-violet bg-clip-text text-transparent">Futuriste, Fluide & Autonome</span>
+    </h1>
+    
+    <p class="max-w-2xl mx-auto text-slate-400 text-base sm:text-lg mb-8 leading-relaxed">
+      Plateforme Next.js 15, React 18 & TypeScript conçue pour une productivité chirurgicale. Manipulez vos flux de travail en direct dans ce simulateur interactif.
+    </p>
+
+    <!-- BADGES STATS HERO -->
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+      <span class="px-3 py-1 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 font-mono"><i class="fa-solid fa-code text-brand-cyan mr-1.5"></i>Next.js 15 & React 18</span>
+      <span class="px-3 py-1 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 font-mono"><i class="fa-solid fa-shield-halved text-brand-success mr-1.5"></i>TypeScript Strict</span>
+      <span class="px-3 py-1 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 font-mono"><i class="fa-solid fa-database text-brand-violet mr-1.5"></i>Local Persistence</span>
+      <span class="px-3 py-1 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 font-mono"><i class="fa-solid fa-volume-high text-brand-rose mr-1.5"></i>Web Audio Feedback</span>
+    </div>
+
+    <!-- STATS LIVE BAR -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12 text-left">
+      <div class="glass p-4 rounded-xl border border-brand-border">
+        <div class="text-xs text-slate-400 uppercase tracking-wider font-mono">Total Tâches</div>
+        <div id="statTotal" class="text-2xl font-bold text-white mt-1">0</div>
+        <div class="text-xs text-brand-cyan mt-1 flex items-center"><i class="fa-solid fa-layer-group mr-1"></i>En base locale</div>
+      </div>
+      <div class="glass p-4 rounded-xl border border-brand-border">
+        <div class="text-xs text-slate-400 uppercase tracking-wider font-mono">À Faire</div>
+        <div id="statTodo" class="text-2xl font-bold text-brand-amber mt-1">0</div>
+        <div class="text-xs text-slate-500 mt-1 flex items-center"><i class="fa-solid fa-hourglass-start mr-1"></i>En attente</div>
+      </div>
+      <div class="glass p-4 rounded-xl border border-brand-border">
+        <div class="text-xs text-slate-400 uppercase tracking-wider font-mono">En Cours</div>
+        <div id="statInProgress" class="text-2xl font-bold text-brand-blue mt-1">0</div>
+        <div class="text-xs text-brand-blue mt-1 flex items-center"><i class="fa-solid fa-bolt mr-1"></i>Actives</div>
+      </div>
+      <div class="glass p-4 rounded-xl border border-brand-border">
+        <div class="text-xs text-slate-400 uppercase tracking-wider font-mono">Complétées</div>
+        <div id="statDone" class="text-2xl font-bold text-brand-success mt-1">0</div>
+        <div class="text-xs text-brand-success mt-1 flex items-center" id="statRate">100% succès</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE KANBAN SIMULATOR -->
+  <main id="demoSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 flex-1 w-full">
+    <div class="glass rounded-2xl border border-brand-border p-6 shadow-2xl">
+      
+      <!-- CONTROLS BAR -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-brand-border/60">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center">
+            <i class="fa-solid fa-table-columns text-brand-cyan mr-2.5"></i>
+            Tableau Kanban Live
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Glissez-déposez ou cliquez sur les flèches pour faire progresser les tâches.</p>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button onclick="openAddTaskModal()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-brand-indigo hover:bg-brand-indigo/80 text-white transition flex items-center shadow-lg shadow-brand-indigo/20">
+            <i class="fa-solid fa-plus mr-1.5"></i>Nouvelle Tâche
+          </button>
+          <button onclick="resetDefaultTasks()" class="px-3.5 py-2 text-xs font-semibold rounded-lg glass-card hover:text-brand-cyan text-slate-300 transition flex items-center">
+            <i class="fa-solid fa-rotate-right mr-1.5"></i>Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- KANBAN COLUMNS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+        
+        <!-- COLUMN 1: TODO -->
+        <div class="flex flex-col bg-slate-950/40 rounded-xl border border-slate-800/80 p-4 min-h-[460px]">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-amber"></span>
+              <span class="font-semibold text-sm text-slate-200">À FAIRE</span>
+            </div>
+            <span id="badgeTodoCount" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0</span>
+          </div>
+          <div id="colTodo" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'todo')" class="flex-1 space-y-3 transition-colors rounded-lg p-1">
+            <!-- Cards injected via JS -->
+          </div>
+        </div>
+
+        <!-- COLUMN 2: IN PROGRESS -->
+        <div class="flex flex-col bg-slate-950/40 rounded-xl border border-slate-800/80 p-4 min-h-[460px]">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-blue animate-pulse"></span>
+              <span class="font-semibold text-sm text-slate-200">EN COURS</span>
+            </div>
+            <span id="badgeInProgressCount" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0</span>
+          </div>
+          <div id="colInProgress" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'in_progress')" class="flex-1 space-y-3 transition-colors rounded-lg p-1">
+            <!-- Cards injected via JS -->
+          </div>
+        </div>
+
+        <!-- COLUMN 3: DONE -->
+        <div class="flex flex-col bg-slate-950/40 rounded-xl border border-slate-800/80 p-4 min-h-[460px]">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-success"></span>
+              <span class="font-semibold text-sm text-slate-200">TERMINÉ</span>
+            </div>
+            <span id="badgeDoneCount" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0</span>
+          </div>
+          <div id="colDone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'done')" class="flex-1 space-y-3 transition-colors rounded-lg p-1">
+            <!-- Cards injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- INSTALLATION CLI HUD -->
+    <div class="mt-12 glass rounded-xl border border-brand-border p-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center">
+            <i class="fa-solid fa-terminal text-brand-cyan mr-2"></i>
+            Installation & Lancement Local Rapide
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Clonez et lancez le serveur de développement en 3 commandes.</p>
+        </div>
+        <button id="copyBtn" onclick="copyInstallCmd()" class="px-3.5 py-1.5 text-xs font-mono font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center">
+          <i class="fa-regular fa-copy mr-1.5"></i>Copier la commande
+        </button>
+      </div>
+
+      <div class="bg-black/60 rounded-lg p-4 font-mono text-xs sm:text-sm text-slate-300 border border-slate-800/80 overflow-x-auto">
+        <span class="text-slate-500"># Cloner et lancer TaskFlow Pro en local</span><br>
+        <span class="text-brand-cyan">git clone</span> https://github.com/Dali5599/taskflow-app.git<br>
+        <span class="text-brand-cyan">cd</span> taskflow-app && <span class="text-brand-cyan">npm install</span><br>
+        <span class="text-brand-cyan">npm run dev</span> <span class="text-slate-500"># Démarre sur http://localhost:3000</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL AJOUT TÂCHE -->
+  <div id="taskModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass max-w-md w-full rounded-2xl border border-brand-border p-6 shadow-2xl transform transition-all">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-brand-border">
+        <h3 class="text-lg font-bold text-white flex items-center">
+          <i class="fa-solid fa-plus-circle text-brand-cyan mr-2"></i>
+          Nouvelle Tâche
+        </h3>
+        <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form onsubmit="handleCreateTask(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-slate-300 mb-1">Titre de la tâche</label>
+          <input id="taskTitleInput" type="text" required placeholder="ex: Optimiser les WebSockets" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-cyan">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-mono text-slate-300 mb-1">Priorité</label>
+            <select id="taskPriorityInput" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-cyan">
+              <option value="low">Faible</option>
+              <option value="medium" selected>Moyenne</option>
+              <option value="high">Haute</option>
+              <option value="urgent">Urgente 🔥</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-slate-300 mb-1">Catégorie</label>
+            <select id="taskCategoryInput" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-cyan">
+              <option value="Dev">Dev</option>
+              <option value="Architecture">Architecture</option>
+              <option value="Design">Design</option>
+              <option value="Sécurité">Sécurité</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white">Annuler</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-lg bg-brand-indigo hover:bg-brand-indigo/80 text-white shadow-lg shadow-brand-indigo/20">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 glass px-4 py-3 rounded-xl border border-brand-cyan/40 text-sm text-white shadow-xl flex items-center space-x-2 transform translate-y-24 opacity-0 transition-all duration-300">
+    <i class="fa-solid fa-circle-check text-brand-cyan"></i>
+    <span id="toastMsg">Action effectuée</span>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="glass border-t border-brand-border/60 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span>🦞 TaskFlow Pro • Développé par</span>
+        <a href="https://github.com/Dali5599" target="_blank" rel="noopener" class="text-brand-cyan hover:underline font-semibold">Requin AI & Dali (@Dali5599)</a>
+      </div>
+      <div>
+        <span class="font-mono">Open-Source MIT License • Zero-Cloud Overhead</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- APPLICATION LOGIC (KANBAN + AUDIO + STORAGE) -->
+  <script>
+    // Initial State
+    const STORAGE_KEY = 'taskflow_demo_tasks';
+    const DEFAULT_TASKS = [
+      { id: '1', title: 'Intégrer le système de notification sonore', status: 'done', priority: 'medium', category: 'Dev' },
+      { id: '2', title: 'Architecture du double cerveau cognitif', status: 'done', priority: 'urgent', category: 'Architecture' },
+      { id: '3', title: 'Optimiser le Drag & Drop Kanban 60fps', status: 'in_progress', priority: 'high', category: 'Dev' },
+      { id: '4', title: 'Déployer les alertes vocales Telegram', status: 'in_progress', priority: 'high', category: 'Sécurité' },
+      { id: '5', title: 'Ajouter les métriques de productivité temps réel', status: 'todo', priority: 'medium', category: 'Design' },
+      { id: '6', title: 'Générateur de graphiques statistiques', status: 'todo', priority: 'low', category: 'Dev' }
+    ];
+
+    let tasks = [];
+    let draggedTaskId = null;
+
+    // Web Audio Chime on Task Complete
+    function playSuccessChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {
+        // AudioContext disabled or not supported
+      }
+    }
+
+    function initTasks() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try { tasks = JSON.parse(stored); } catch (e) { tasks = DEFAULT_TASKS; }
+      } else {
+        tasks = [...DEFAULT_TASKS];
+      }
+      renderBoard();
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      renderBoard();
+    }
+
+    function resetDefaultTasks() {
+      tasks = [...DEFAULT_TASKS];
+      saveTasks();
+      showToast('Tableau réinitialisé aux valeurs d\'origine');
+    }
+
+    function getPriorityBadge(priority) {
+      switch (priority) {
+        case 'urgent': return '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">URGENT</span>';
+        case 'high': return '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">HAUTE</span>';
+        case 'medium': return '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">MOYENNE</span>';
+        default: return '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">FAIBLE</span>';
+      }
+    }
+
+    function renderBoard() {
+      const colTodo = document.getElementById('colTodo');
+      const colInProgress = document.getElementById('colInProgress');
+      const colDone = document.getElementById('colDone');
+
+      colTodo.innerHTML = '';
+      colInProgress.innerHTML = '';
+      colDone.innerHTML = '';
+
+      let countTodo = 0, countInProgress = 0, countDone = 0;
+
+      tasks.forEach(task => {
+        const card = document.createElement('div');
+        card.className = 'glass-card p-3.5 rounded-xl cursor-grab select-none';
+        card.draggable = true;
+        card.id = `task-${task.id}`;
+
+        card.addEventListener('dragstart', (e) => {
+          draggedTaskId = task.id;
+          card.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', task.id);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+        });
+
+        // Navigation buttons
+        let moveLeftBtn = '', moveRightBtn = '';
+        if (task.status === 'in_progress') {
+          moveLeftBtn = `<button onclick="moveTask('${task.id}', 'todo')" title="Déplacer vers À Faire" class="p-1 hover:text-brand-cyan transition"><i class="fa-solid fa-arrow-left text-xs"></i></button>`;
+          moveRightBtn = `<button onclick="moveTask('${task.id}', 'done')" title="Terminer la tâche" class="p-1 hover:text-brand-success transition"><i class="fa-solid fa-check text-xs"></i></button>`;
+        } else if (task.status === 'todo') {
+          moveRightBtn = `<button onclick="moveTask('${task.id}', 'in_progress')" title="Démarrer la tâche" class="p-1 hover:text-brand-blue transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>`;
+        } else if (task.status === 'done') {
+          moveLeftBtn = `<button onclick="moveTask('${task.id}', 'in_progress')" title="Repasser en cours" class="p-1 hover:text-brand-cyan transition"><i class="fa-solid fa-arrow-left text-xs"></i></button>`;
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            ${getPriorityBadge(task.priority)}
+            <span class="text-[10px] text-slate-400 font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">${task.category}</span>
+          </div>
+          <p class="text-sm font-medium ${task.status === 'done' ? 'line-through text-slate-500' : 'text-slate-200'} mb-3 leading-snug">${task.title}</p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-slate-400">
+            <button onclick="deleteTask('${task.id}')" title="Supprimer" class="p-1 hover:text-brand-rose transition">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+            <div class="flex items-center space-x-1">
+              ${moveLeftBtn}
+              ${moveRightBtn}
+            </div>
+          </div>
+        `;
+
+        if (task.status === 'todo') {
+          colTodo.appendChild(card);
+          countTodo++;
+        } else if (task.status === 'in_progress') {
+          colInProgress.appendChild(card);
+          countInProgress++;
+        } else if (task.status === 'done') {
+          colDone.appendChild(card);
+          countDone++;
+        }
+      });
+
+      // Update badges
+      document.getElementById('badgeTodoCount').innerText = countTodo;
+      document.getElementById('badgeInProgressCount').innerText = countInProgress;
+      document.getElementById('badgeDoneCount').innerText = countDone;
+
+      // Update Stats
+      const total = tasks.length;
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statTodo').innerText = countTodo;
+      document.getElementById('statInProgress').innerText = countInProgress;
+      document.getElementById('statDone').innerText = countDone;
+
+      const rate = total > 0 ? Math.round((countDone / total) * 100) : 0;
+      document.getElementById('statRate').innerText = `${rate}% taux de succès`;
+    }
+
+    function moveTask(id, targetStatus) {
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.status = targetStatus;
+        if (targetStatus === 'done') {
+          playSuccessChime();
+          showToast('Tâche complétée avec succès ! 🎉');
+        }
+        saveTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      showToast('Tâche supprimée');
+    }
+
+    // Drag and Drop handlers
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drop-zone-active');
+    }
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drop-zone-active');
+    }
+    function handleDrop(e, status) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drop-zone-active');
+      const id = e.dataTransfer.getData('text/plain') || draggedTaskId;
+      if (id) {
+        moveTask(id, status);
+      }
+    }
+
+    // Modal Add Task
+    function openAddTaskModal() {
+      document.getElementById('taskModal').classList.remove('hidden');
+      document.getElementById('taskTitleInput').focus();
+    }
+    function closeAddTaskModal() {
+      document.getElementById('taskModal').classList.add('hidden');
+      document.getElementById('taskTitleInput').value = '';
+    }
+    function handleCreateTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('taskTitleInput').value.trim();
+      const priority = document.getElementById('taskPriorityInput').value;
+      const category = document.getElementById('taskCategoryInput').value;
+      if (title) {
+        tasks.push({
+          id: Date.now().toString(),
+          title: title,
+          status: 'todo',
+          priority: priority,
+          category: category
+        });
+        saveTasks();
+        closeAddTaskModal();
+        showToast('Nouvelle tâche ajoutée au Kanban !');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2500);
+    }
+
+    function copyInstallCmd() {
+      const cmd = "git clone https://github.com/Dali5599/taskflow-app.git && cd taskflow-app && npm install && npm run dev";
+      navigator.clipboard.writeText(cmd).then(() => {
+        showToast('Commande copiée dans le presse-papier !');
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<i class="fa-solid fa-check text-brand-success mr-1.5"></i>Copié !';
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa-regular fa-copy mr-1.5"></i>Copier la commande';
+        }, 2000);
+      });
+    }
+
+    function scrollToDemo() {
+      document.getElementById('demoSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Bootstrap
+    window.addEventListener('DOMContentLoaded', initTasks);
+  </script>
+</body>
+</html>

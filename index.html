@@ -169,6 +169,16 @@
         </div>
         
         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button onclick="exportJSON()" class="px-3 py-2 text-xs font-semibold rounded-lg glass-card hover:text-brand-cyan text-slate-300 transition flex items-center">
+            <i class="fa-solid fa-download mr-1.5"></i>Export JSON
+          </button>
+          <button onclick="exportCSV()" class="px-3 py-2 text-xs font-semibold rounded-lg glass-card hover:text-brand-cyan text-slate-300 transition flex items-center">
+            <i class="fa-solid fa-file-csv mr-1.5"></i>Export CSV
+          </button>
+          <input type="file" id="importInput" accept=".json,.csv" onchange="handleImportFile(event)" class="hidden">
+          <button onclick="document.getElementById('importInput').click()" class="px-3 py-2 text-xs font-semibold rounded-lg glass-card hover:text-brand-cyan text-slate-300 transition flex items-center">
+            <i class="fa-solid fa-upload mr-1.5"></i>Importer
+          </button>
           <button onclick="openAddTaskModal()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-brand-indigo hover:bg-brand-indigo/80 text-white transition flex items-center shadow-lg shadow-brand-indigo/20">
             <i class="fa-solid fa-plus mr-1.5"></i>Nouvelle Tâche
           </button>
@@ -524,6 +534,52 @@
         closeAddTaskModal();
         showToast('Nouvelle tâche ajoutée au Kanban !');
       }
+    }
+
+    function exportJSON() {
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tasks, null, 2));
+      const dl = document.createElement('a');
+      dl.setAttribute('href', dataStr);
+      dl.setAttribute('download', 'taskflow-export.json');
+      document.body.appendChild(dl);
+      dl.click();
+      dl.remove();
+      showToast('Tâches exportées en JSON ! 📥');
+    }
+
+    function exportCSV() {
+      const headers = ['id', 'title', 'status', 'priority', 'category'];
+      const rows = tasks.map(t => [t.id, `"${(t.title || '').replace(/"/g, '""')}"`, t.status, t.priority, t.category]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const dl = document.createElement('a');
+      dl.setAttribute('href', encodeURI(csvContent));
+      dl.setAttribute('download', 'taskflow-export.csv');
+      document.body.appendChild(dl);
+      dl.click();
+      dl.remove();
+      showToast('Tâches exportées en CSV ! 📊');
+    }
+
+    function handleImportFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target.result;
+          if (file.name.endsWith('.json')) {
+            const parsed = JSON.parse(content);
+            if (Array.isArray(parsed)) {
+              tasks = [...tasks, ...parsed];
+              saveTasks();
+              showToast(`${parsed.length} tâches importées ! ✅`);
+            }
+          }
+        } catch (err) {
+          showToast('Erreur format de fichier ❌');
+        }
+      };
+      reader.readAsText(file);
     }
 
     function showToast(msg) {

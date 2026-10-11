@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/lib/hooks/use-dark-mode'
+import { AuthProvider } from '@/lib/hooks/use-auth'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
 
@@ -21,23 +22,25 @@ export default function RootLayout({
     <html lang="fr">
       <body className={inter.className}>
         <ThemeProvider>
-          <div className="flex min-h-screen">
-            {/* Sidebar - Navigation */}
-            <aside className="fixed left-0 top-0 h-screen z-20">
-              <Sidebar />
-            </aside>
+          <AuthProvider>
+            <div className="flex min-h-screen">
+              {/* Sidebar - Navigation */}
+              <aside className="fixed left-0 top-0 h-screen z-20">
+                <Sidebar />
+              </aside>
 
-            {/* Main Content */}
-            <div className="flex-1 ml-64">
-              {/* Header */}
-              <Header />
+              {/* Main Content */}
+              <div className="flex-1 ml-64">
+                {/* Header */}
+                <Header />
 
-              {/* Page Content */}
-              <main className="p-6 animate-fade-in">
-                {children}
-              </main>
+                {/* Page Content */}
+                <main className="p-6 animate-fade-in">
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

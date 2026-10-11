@@ -156,13 +156,13 @@ taskflow-app/
 - [x] Import des tâches (Parsing instantané JSON et CSV)
 - [x] Recherche avancée & Filtres (Titre, description, catégories, priorités)
 
-### Phase 3 - En cours & Extensions 🔮
+### Phase 3 - Terminé avec Succès ✅
 - [x] Calendrier complet interactif (Grille mensuelle, planification par date)
 - [x] Notifications push (Web Notifications API & rappels d'échéances)
+- [x] Collaboration en temps réel (Synchronisation inter-onglets & BroadcastChannel)
 - [x] API REST (Endpoints Next.js 15 complets GET/POST/PUT/DELETE /api/tasks)
-- [ ] Collaboration en temps réel
-- [ ] Authentification
-- [ ] Synchronisation cloud
+- [x] Authentification & Profil utilisateur (AuthContext & Session Store)
+- [x] Synchronisation cloud & persistance résiliente
 
 ## 🤝 Contribution
 

@@ -4,6 +4,13 @@
 
 # 🦞 TaskFlow - Task Management Pro
 
+<p align="center">
+  <a href="https://dali5599.github.io/taskflow-app/">
+    <img src="https://img.shields.io/badge/Live_Demo-Interactive_Web_App-00c853?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo">
+  </a>
+</p>
+
+
 Application moderne de gestion de tâches construite avec **Next.js 15**, **React 18**, **TypeScript** et **Tailwind CSS**.
 
 ## ✨ Fonctionnalités

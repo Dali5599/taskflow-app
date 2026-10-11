@@ -149,15 +149,15 @@ taskflow-app/
 - [x] Animations
 - [x] Analytics de base
 
-### Phase 2 - En développement 🚧
-- [ ] Drag & Drop des tâches
-- [ ] Raccourcis clavier
-- [ ] Export des données (CSV, JSON)
-- [ ] Import des tâches
-- [ ] Recherche avancée
+### Phase 2 - Terminé avec Succès ✅
+- [x] Drag & Drop des tâches (Réorganisation intuitive)
+- [x] Raccourcis clavier (Ctrl+K recherche, N nouvelle tâche, ? aide, Esc)
+- [x] Export des données (CSV & JSON en 1 clic)
+- [x] Import des tâches (Parsing instantané JSON et CSV)
+- [x] Recherche avancée & Filtres (Titre, description, catégories, priorités)
 
-### Phase 3 - Futur 🔮
-- [ ] Calendrier complet
+### Phase 3 - En cours & Extensions 🔮
+- [x] Calendrier complet interactif (Grille mensuelle, planification par date)
 - [ ] Notifications push
 - [ ] Collaboration en temps réel
 - [ ] API REST

@@ -29,14 +29,14 @@ export type TaskTag = {
 export interface Task {
   id: string
   title: string
-  description: string
+  description?: string
   status: TaskStatus
   priority: TaskPriority
   category: TaskCategory
-  tags: string[] // Tag IDs
-  dueDate: string | null // ISO date string
+  tags: string[] // Tag IDs or labels
+  dueDate?: string | null // ISO date string (YYYY-MM-DD or ISO)
   createdAt: string // ISO date string
-  completedAt: string | null // ISO date string
+  completedAt?: string | null // ISO date string
   order: number // For drag & drop ordering
 }
 
@@ -76,6 +76,7 @@ export type KeyboardShortcutAction =
   | 'focus-search'
   | 'delete-focused'
   | 'mark-complete'
+  | 'show-shortcuts'
 
 /**
  * Keyboard Shortcut
